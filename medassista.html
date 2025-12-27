@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Medi Assist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4fd1c5;
+            --secondary: #81e6d9;
+            --accent: #38a169;
+            --bg-gradient: linear-gradient(135deg, #e0f7fa 0%, #b2f7ef 50%, #81e6d9 100%);
+            --button-radius: 1.5rem;
+            --font-lg: 1.2rem;
+            --font-xl: 2rem;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+        }
+        #app {
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 2rem 1rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            min-height: 90vh;
+        }
+        .center { text-align: center; }
+        .app-title {
+            font-size: var(--font-xl);
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--button-radius);
+            font-size: var(--font-lg);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            gap: 0.7rem;
+        }
+        .btn:disabled {
+            background: #b2f7ef;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .icon-btn {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            font-size: 1rem;
+            color: #333;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 0.7rem;
+            border: 1px solid #b2f7ef;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .error {
+            color: #e53e3e;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .success {
+            color: #38a169;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .menu-btn {
+            font-size: 1.1rem;
+            padding: 1.2rem;
+            background: var(--secondary);
+            color: #234e52;
+            border-radius: var(--button-radius);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .menu-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .back-btn {
+            margin-top: 1.5rem;
+            background: #e6fffa;
+            color: #234e52;
+            border: 1px solid #b2f7ef;
+            font-size: 1rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .swipe-actions {
+            display: flex;
+            gap: 0.7rem;
+            margin-top: 0.5rem;
+        }
+        .swipe-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #fff;
+            background: var(--primary);
+            transition: background 0.2s;
+        }
+        .swipe-btn.snooze { background: #ecc94b; color: #234e52; }
+        .swipe-btn.dismiss { background: #e53e3e; }
+        .swipe-btn.nextday { background: #38a169; }
+        .medicine-list, .appointment-list {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .medicine-card, .appointment-card {
+            background: #f0fff4;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+        }
+        .alert {
+            background: #fefcbf;
+            color: #b7791f;
+            border-radius: 0.7rem;
+            padding: 0.7rem;
+            margin-bottom: 0.7rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .lang-select {
+            margin-bottom: 1rem;
+            float: right;
+        }
+        .chatbot-container {
+            background: #e6fffa;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 1rem;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.7rem;
+        }
+        .chat-input-row input {
+            flex: 1;
+        }
+        .share-btn {
+            background: #4299e1;
+            color: #fff;
+            border: none;
+            border-radius: 1rem;
+            padding: 0.7rem 1.2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.7rem;
+        }
+        @media (max-width: 600px) {
+            #app { padding: 0.7rem 0.2rem 1.5rem 0.2rem; border-radius: 0.7rem; }
+            .app-title { font-size: 1.3rem; }
+            .btn, .menu-btn { font-size: 1rem; padding: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        // --- Language Support ---
+        const LANGUAGES = {
+            en: {
+                appName: "Medi Assist",
+                uploadMedicines: "Upload medicines",
+                swipeOptions: "Swiping options for alerts (dismiss, snooze, next-day)",
+                bookAppointments: "Booking doctor appointments",
+                terms: "Terms and Conditions",
+                agree: "I agree to Terms & Conditions",
+                register: "Register",
+                login: "Login",
+                name: "Name",
+                email: "Email",
+                password: "Password",
+                confirmPassword: "Confirm Password",
+                addUser: "Add Linked User (optional)",
+                contact: "Contact",
+                alreadyAccount: "Already have an account?",
+                noAccount: "Don't have an account?",
+                mainMenu: "Main Menu",
+                medicines: "Medicines",
+                appointments: "Appointments",
+                back: "Back to Main Menu",
+                medName: "Medicine Name",
+                tablets: "Number of Tablets in Strip",
+                mfgDate: "Manufactured Date",
+                expDate: "Expiry Date",
+                schedule: "Schedule (Time for Intake)",
+                upload: "Upload",
+                orderOnline: "Order Medicines Online",
+                alertLow: "Tablets are about to finish!",
+                alertExpiry: "Medicine is about to expire!",
+                dismiss: "Dismiss",
+                snooze: "Snooze",
+                nextDay: "Next-day Reminder",
+                snoozeFor: "Snooze for (minutes)",
+                bookDoctor: "Book Doctor Appointment",
+                doctorName: "Doctor Name",
+                date: "Date",
+                time: "Time",
+                book: "Book",
+                upcoming: "Upcoming Appointments",
+                cancel: "Cancel",
+                reschedule: "Reschedule",
+                reminder: "Reminder: Appointment soon!",
+                aiCaretaker: "AI Caretaker",
+                askCaretaker: "Ask Caretaker...",
+                send: "Send",
+                alertsTo: "Send alerts to",
+                self: "Self",
+                linkedUser: "Linked User",
+                share: "Share App Link",
+                language: "Language",
+                english: "English",
+                telugu: "Telugu",
+                hindi: "Hindi",
+                logout: "Logout",
+                passwordShort: "Password must be at least 6 characters.",
+                emailExists: "Email already registered.",
+                invalidLogin: "Invalid email or password.",
+                required: "Required",
+                add: "Add",
+                remove: "Remove",
+                snoozed: "Alert snoozed.",
+                dismissed: "Alert dismissed.",
+                nextDaySet: "Next-day reminder set.",
+                appointmentBooked: "Appointment booked.",
+                appointmentCancelled: "Appointment cancelled.",
+                appointmentRescheduled: "Appointment rescheduled.",
+                selectLanguage: "Select Language",
+                alertsShared: "Alerts will be sent to both users.",
+                alertsSelf: "Alerts will be sent to you only.",
+                logoutConfirm: "Are you sure you want to logout?",
+                tncInfo: `
+                    <b>Uploading medicines:</b> Add your medicines and get reminders.<br>
+                    <b>Swiping options for alerts:</b> Dismiss, snooze, or set next-day reminders.<br>
+                    <b>Booking doctor appointments:</b> Book, view, and manage appointments.<br>
+                    <b>Terms:</b> Your data is stored securely on your device. By using this app, you agree to receive medicine and appointment alerts.`
+            },
+            te: {
+                appName: "మెడి అసిస్ట్",
+                uploadMedicines: "ఔషధాలను అప్‌లోడ్ చేయండి",
+                swipeOptions: "అలర్ట్‌ల కోసం స్వైప్ ఎంపికలు (డిస్మిస్, స్నూజ్, నెక్స్ట్-డే)",
+                bookAppointments: "డాక్టర్ అపాయింట్‌మెంట్‌లు బుక్ చేయండి",
+                terms: "నిబంధనలు మరియు షరతులు",
+                agree: "నేను నిబంధనలు మరియు షరతులను అంగీకరిస్తున్నాను",
+                register: "నమోదు",
+                login: "లాగిన్",
+                name: "పేరు",
+                email: "ఇమెయిల్",
+                password: "పాస్‌వర్డ్",
+                confirmPassword: "పాస్‌వర్డ్‌ను నిర్ధారించండి",
+                addUser: "లింక్ చేసిన వినియోగదారుని జోడించండి (ఐచ్ఛికం)",
+                contact: "సంప్రదింపు",
+                alreadyAccount: "ఇప్పటికే ఖాతా ఉందా?",
+                noAccount: "ఖాతా లేదా?",
+                mainMenu: "ప్రధాన మెనూ",
+                medicines: "ఔషధాలు",
+                appointments: "అపాయింట్‌మెంట్‌లు",
+                back: "ప్రధాన మెనూకు వెనక్కి",
+                medName: "ఔషధం పేరు",
+                tablets: "స్ట్రిప్‌లో టాబ్లెట్లు సంఖ్య",
+                mfgDate: "తయారీ తేదీ",
+                expDate: "గడువు తేదీ",
+                schedule: "షెడ్యూల్ (తీసుకునే సమయం)",
+                upload: "అప్‌లోడ్ చేయండి",
+                orderOnline: "ఔషధాలను ఆన్‌లైన్‌లో ఆర్డర్ చేయండి",
+                alertLow: "టాబ్లెట్లు తక్కువగా ఉన్నాయి!",
+                alertExpiry: "ఔషధం గడువు ముగియబోతోంది!",
+                dismiss: "డిస్మిస్",
+                snooze: "స్నూజ్",
+                nextDay: "రేపు గుర్తు చేయండి",
+                snoozeFor: "స్నూజ్ (నిమిషాలు)",
+                bookDoctor: "డాక్టర్ అపాయింట్‌మెంట్ బుక్ చేయండి",
+                doctorName: "డాక్టర్ పేరు",
+                date: "తేదీ",
+                time: "సమయం",
+                book: "బుక్ చేయండి",
+                upcoming: "రాబోయే అపాయింట్‌మెంట్‌లు",
+                cancel: "రద్దు చేయండి",
+                reschedule: "పునఃనిర్ధారించండి",
+                reminder: "గమనిక: అపాయింట్‌మెంట్ త్వరలో!",
+                aiCaretaker: "AI కేర్‌టేకర్",
+                askCaretaker: "కేర్‌టేకర్‌ను అడగండి...",
+                send: "పంపండి",
+                alertsTo: "అలర్ట్‌లను పంపండి",
+                self: "స్వయం",
+                linkedUser: "లింక్ చేసిన వినియోగదారు",
+                share: "యాప్ లింక్‌ను షేర్ చేయండి",
+                language: "భాష",
+                english: "ఇంగ్లీష్",
+                telugu: "తెలుగు",
+                hindi: "హిందీ",
+                logout: "లాగౌట్",
+                passwordShort: "పాస్‌వర్డ్ కనీసం 6 అక్షరాలు ఉండాలి.",
+                emailExists: "ఈమెయిల్ ఇప్పటికే నమోదు చేయబడింది.",
+                invalidLogin: "చెల్లని ఇమెయిల్ లేదా పాస్‌వర్డ్.",
+                required: "అవసరం",
+                add: "జోడించండి",
+                remove: "తొలగించండి",
+                snoozed: "అలర్ట్ స్నూజ్ చేయబడింది.",
+                dismissed: "అలర్ట్ డిస్మిస్ చేయబడింది.",
+                nextDaySet: "రేపు గుర్తు చేయబడింది.",
+                appointmentBooked: "అపాయింట్‌మెంట్ బుక్ చేయబడింది.",
+                appointmentCancelled: "అపాయింట్‌మెంట్ రద్దు చేయబడింది.",
+                appointmentRescheduled: "అపాయింట్‌మెంట్ పునఃనిర్ధారించబడింది.",
+                selectLanguage: "భాషను ఎంచుకోండి",
+                alertsShared: "అలర్ట్‌లు ఇద్దరికీ పంపబడతాయి.",
+                alertsSelf: "అలర్ట్‌లు మీకు మాత్రమే పంపబడతాయి.",
+                logoutConfirm: "మీరు ఖచ్చితంగా లాగౌట్ కావాలనుకుంటున్నారా?",
+                tncInfo: `
+                    <b>ఔషధాలను అప్‌లోడ్ చేయండి:</b> మీ ఔషధాలను జోడించండి మరియు గుర్తు చేయబడండి.<br>
+                    <b>అలర్ట్‌ల కోసం స్వైప్ ఎంపికలు:</b> డిస్మిస్, స్నూజ్ లేదా రేపు గుర్తు చేయండి.<br>
+                    <b>డాక్టర్ అపాయింట్‌మెంట్‌లు:</b> బుక్ చేయండి, చూడండి మరియు నిర్వహించండి.<br>
+                    <b>నిబంధనలు:</b> మీ డేటా మీ పరికరంలో సురక్షితంగా నిల్వ చేయబడుతుంది. ఈ యాప్‌ను ఉపయోగించడం ద్వారా మీరు ఔషధాలు మరియు అపాయింట్‌మెంట్‌ల అలర్ట్‌లను స్వీకరించడానికి అంగీకరిస్తారు.`
+            },
+            hi: {
+                appName: "मेडी असिस्ट",
+                uploadMedicines: "दवाइयाँ अपलोड करें",
+                swipeOptions: "अलर्ट के लिए स्वाइप विकल्प (डिसमिस, स्नूज़, अगले दिन)",
+                bookAppointments: "डॉक्टर अपॉइंटमेंट बुक करें",
+                terms: "नियम और शर्तें",
+                agree: "मैं नियम और शर्तों से सहमत हूँ",
+                register: "रजिस्टर करें",
+                login: "लॉगिन",
+                name: "नाम",
+                email: "ईमेल",
+                password: "पासवर्ड",
+                confirmPassword: "पासवर्ड की पुष्टि करें",
+                addUser: "लिंक्ड यूज़र जोड़ें (वैकल्पिक)",
+                contact: "संपर्क",
+                alreadyAccount: "पहले से खाता है?",
+                noAccount: "खाता नहीं है?",
+                mainMenu: "मुख्य मेनू",
+                medicines: "दवाइयाँ",
+                appointments: "अपॉइंटमेंट्स",
+                back: "मुख्य मेनू पर वापस जाएँ",
+                medName: "दवा का नाम",
+                tablets: "स्ट्रिप में टैबलेट्स की संख्या",
+                mfgDate: "निर्माण तिथि",
+                expDate: "समाप्ति तिथि",
+                schedule: "शेड्यूल (सेवन का समय)",
+                upload: "अपलोड करें",
+                orderOnline: "दवाइयाँ ऑनलाइन ऑर्डर करें",
+                alertLow: "टैबलेट्स खत्म होने वाली हैं!",
+                alertExpiry: "दवा समाप्त होने वाली है!",
+                dismiss: "डिसमिस",
+                snooze: "स्नूज़",
+                nextDay: "अगले दिन याद दिलाएँ",
+                snoozeFor: "स्नूज़ (मिनट)",
+                bookDoctor: "डॉक्टर अपॉइंटमेंट बुक करें",
+                doctorName: "डॉक्टर का नाम",
+                date: "तारीख",
+                time: "समय",
+                book: "बुक करें",
+                upcoming: "आगामी अपॉइंटमेंट्स",
+                cancel: "रद्द करें",
+                reschedule: "पुनर्निर्धारित करें",
+                reminder: "रिमाइंडर: अपॉइंटमेंट जल्द है!",
+                aiCaretaker: "AI केयरटेकर",
+                askCaretaker: "केयरटेकर से पूछें...",
+                send: "भेजें",
+                alertsTo: "अलर्ट भेजें",
+                self: "स्वयं",
+                linkedUser: "लिंक्ड यूज़र",
+                share: "ऐप लिंक साझा करें",
+                language: "भाषा",
+                english: "अंग्रेज़ी",
+                telugu: "तेलुगु",
+                hindi: "हिंदी",
+                logout: "लॉगआउट",
+                passwordShort: "पासवर्ड कम से कम 6 अक्षर का होना चाहिए।",
+                emailExists: "ईमेल पहले से रजिस्टर्ड है।",
+                invalidLogin: "अमान्य ईमेल या पासवर्ड।",
+                required: "आवश्यक",
+                add: "जोड़ें",
+                remove: "हटाएँ",
+                snoozed: "अलर्ट स्नूज़ किया गया।",
+                dismissed: "अलर्ट डिसमिस किया गया।",
+                nextDaySet: "अगले दिन के लिए रिमाइंडर सेट।",
+                appointmentBooked: "अपॉइंटमेंट बुक किया गया।",
+                appointmentCancelled: "अपॉइंटमेंट रद्द किया गया।",
+                appointmentRescheduled: "अपॉइंटमेंट पुनर्निर्धारित किया गया।",
+                selectLanguage: "भाषा चुनें",
+                alertsShared: "अलर्ट दोनों यूज़र्स को भेजे जाएँगे।",
+                alertsSelf: "अलर्ट केवल आपको भेजे जाएँगे।",
+                logoutConfirm: "क्या आप वाकई लॉगआउट करना चाहते हैं?",
+                tncInfo: `
+                    <b>दवाइयाँ अपलोड करें:</b> अपनी दवाइयाँ जोड़ें और रिमाइंडर पाएं।<br>
+                    <b>अलर्ट के लिए स्वाइप विकल्प:</b> डिसमिस, स्नूज़ या अगले दिन के लिए सेट करें।<br>
+                    <b>डॉक्टर अपॉइंटमेंट:</b> बुक करें, देखें और प्रबंधित करें।<br>
+                    <b>नियम:</b> आपका डेटा आपके डिवाइस पर सुरक्षित है। इस ऐप का उपयोग करके आप दवा और अपॉइंटमेंट अलर्ट प्राप्त करने के लिए सहमत हैं।`
+            }
+        };
+        let lang = localStorage.getItem('medassist_lang') || 'en';
+        function t(key) { return LANGUAGES[lang][key] || key; }
+
+        // --- State ---
+        let state = {
+            page: 'tnc',
+            user: null,
+            users: JSON.parse(localStorage.getItem('medassist_users') || '[]'),
+            medicines: JSON.parse(localStorage.getItem('medassist_meds') || '{}'),
+            appointments: JSON.parse(localStorage.getItem('medassist_appts') || '{}'),
+            alertsTo: 'self',
+            linkedUser: null,
+            chatbot: [],
+        };
+
+        // --- Utils ---
+        function saveUsers() {
+            localStorage.setItem('medassist_users', JSON.stringify(state.users));
+        }
+        function saveMeds() {
+            localStorage.setItem('medassist_meds', JSON.stringify(state.medicines));
+        }
+        function saveAppts() {
+            localStorage.setItem('medassist_appts', JSON.stringify(state.appointments));
+        }
+        function saveLang() {
+            localStorage.setItem('medassist_lang', lang);
+        }
+        function getUserMeds() {
+            return state.medicines[state.user?.email] || [];
+        }
+        function getUserAppts() {
+            return state.appointments[state.user?.email] || [];
+        }
+        function setUserMeds(meds) {
+            state.medicines[state.user.email] = meds;
+            saveMeds();
+        }
+        function setUserAppts(appts) {
+            state.appointments[state.user.email] = appts;
+            saveAppts();
+        }
+        function showToast(msg, type='success') {
+            const el = document.createElement('div');
+            el.className = type === 'error' ? 'error' : 'success';
+            el.innerHTML = msg;
+            document.getElementById('app').prepend(el);
+            setTimeout(()=>el.remove(), 2000);
+        }
+        function playAlert() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            o.type = 'sine';
+            o.frequency.value = 880;
+            o.connect(ctx.destination);
+            o.start();
+            setTimeout(()=>o.stop(), 300);
+        }
+        function formatDate(d) {
+            if (!d) return '';
+            return new Date(d).toLocaleDateString();
+        }
+        function formatTime(t) {
+            if (!t) return '';
+            return t;
+        }
+        function switchLang(newLang) {
+            lang = newLang;
+            saveLang();
+            render();
+        }
+
+        // --- Render Functions ---
+        function renderLangSelect() {
+            return `
+                <select class="lang-select" onchange="switchLang(this.value)">
+                    <option value="en" ${lang==='en'?'selected':''}>${t('english')}</option>
+                    <option value="te" ${lang==='te'?'selected':''}>${t('telugu')}</option>
+                    <option value="hi" ${lang==='hi'?'selected':''}>${t('hindi')}</option>
+                </select>
+            `;
+        }
+        function renderTnC() {
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title"><i class="fa-solid fa-heart-pulse"></i> ${t('appName')}</div>
+                    <div style="font-size:1.1rem;margin-bottom:1rem;">
+                        <div>${t('tncInfo')}</div>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agreeTnc" onchange="onTncAgree(this)">
+                        <label for="agreeTnc">${t('agree')}</label>
+                    </div>
+                    <button class="btn" id="registerBtn" onclick="gotoRegister()" disabled>
+                        <i class="fa-solid fa-user-plus icon-btn"></i> ${t('register')}
+                    </button>
+                    <button class="btn" id="loginBtn" onclick="gotoLogin()" disabled>
+                        <i class="fa-solid fa-right-to-bracket icon-btn"></i> ${t('login')}
+                    </button>
+                </div>
+            `;
+        }
+        function renderRegister() {
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title">${t('register')}</div>
+                </div>
+                <form id="registerForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>${t('name')}</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('email')}</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('password')}</label>
+                        <input type="password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>${t('confirmPassword')}</label>
+                        <input type="password" name="confirm" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>${t('addUser')}</label>
+                        <input type="text" name="linkedName" placeholder="${t('name')}">
+                        <input type="text" name="linkedContact" placeholder="${t('contact')}">
+                    </div>
+                    <div class="form-group">
+                        <label>${t('alertsTo')}</label>
+                        <select name="alertsTo">
+                            <option value="self">${t('self')}</option>
+                            <option value="both">${t('linkedUser')}</option>
+                        </select>
+                    </div>
+                    <button class="btn" type="submit"><i class="fa-solid fa-user-plus icon-btn"></i> ${t('register')}</button>
+                </form>
+                <div class="center" style="margin-top:1rem;">
+                    <span>${t('alreadyAccount')}</span>
+                    <button class="btn" onclick="gotoLogin()" style="width:auto;padding:0.5rem 1.2rem;font-size:1rem;">
+                        <i class="fa-solid fa-right-to-bracket icon-btn"></i> ${t('login')}
+                    </button>
+                </div>
+            `;
+        }
+        function renderLogin() {
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title">${t('login')}</div>
+                </div>
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>${t('email')}</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('password')}</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <button class="btn" type="submit"><i class="fa-solid fa-right-to-bracket icon-btn"></i> ${t('login')}</button>
+                </form>
+                <div class="center" style="margin-top:1rem;">
+                    <span>${t('noAccount')}</span>
+                    <button class="btn" onclick="gotoRegister()" style="width:auto;padding:0.5rem 1.2rem;font-size:1rem;">
+                        <i class="fa-solid fa-user-plus icon-btn"></i> ${t('register')}
+                    </button>
+                </div>
+            `;
+        }
+        function renderMainMenu() {
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title">${t('mainMenu')}</div>
+                </div>
+                <div class="menu-options">
+                    <button class="menu-btn" onclick="gotoMedicines()">
+                        <i class="fa-solid fa-capsules"></i> ${t('medicines')}
+                    </button>
+                    <button class="menu-btn" onclick="gotoAppointments()">
+                        <i class="fa-solid fa-calendar-check"></i> ${t('appointments')}
+                    </button>
+                </div>
+                <div style="margin-top:2rem;">
+                    <button class="btn" onclick="gotoChatbot()">
+                        <i class="fa-solid fa-robot"></i> ${t('aiCaretaker')}
+                    </button>
+                </div>
+                <div style="margin-top:2rem;">
+                    <button class="share-btn" onclick="shareApp()">
+                        <i class="fa-solid fa-share-nodes"></i> ${t('share')}
+                    </button>
+                </div>
+                <div style="margin-top:2rem;">
+                    <button class="btn" onclick="logout()">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> ${t('logout')}
+                    </button>
+                </div>
+            `;
+        }
+        function renderMedicines() {
+            const meds = getUserMeds();
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title"><i class="fa-solid fa-capsules"></i> ${t('medicines')}</div>
+                </div>
+                <form id="medForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>${t('medName')}</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('tablets')}</label>
+                        <input type="number" name="tablets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('mfgDate')}</label>
+                        <input type="date" name="mfg" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('expDate')}</label>
+                        <input type="date" name="exp" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('schedule')}</label>
+                        <input type="time" name="schedule" required>
+                    </div>
+                    <button class="btn" type="submit"><i class="fa-solid fa-upload icon-btn"></i> ${t('upload')}</button>
+                </form>
+                <div class="medicine-list">
+                    ${meds.map((m,i)=>`
+                        <div class="medicine-card">
+                            <b><i class="fa-solid fa-pills"></i> ${m.name}</b><br>
+                            ${t('tablets')}: ${m.tablets}<br>
+                            ${t('mfgDate')}: ${formatDate(m.mfg)}<br>
+                            ${t('expDate')}: ${formatDate(m.exp)}<br>
+                            ${t('schedule')}: ${formatTime(m.schedule)}
+                            ${renderMedAlerts(m, i)}
+                            <div class="swipe-actions">
+                                <button class="swipe-btn dismiss" onclick="dismissAlert(${i})">${t('dismiss')}</button>
+                                <button class="swipe-btn snooze" onclick="snoozeAlert(${i})">${t('snooze')}</button>
+                                <button class="swipe-btn nextday" onclick="nextDayAlert(${i})">${t('nextDay')}</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="center">
+                    <a href="https://www.netmeds.com/" target="_blank" class="btn" style="background:#4299e1;">
+                        <i class="fa-solid fa-cart-shopping"></i> Netmeds
+                    </a>
+                    <a href="https://www.1mg.com/" target="_blank" class="btn" style="background:#4299e1;">
+                        <i class="fa-solid fa-cart-shopping"></i> Tata 1mg
+                    </a>
+                    <a href="https://www.apollo247.com/" target="_blank" class="btn" style="background:#4299e1;">
+                        <i class="fa-solid fa-cart-shopping"></i> Apollo 24/7
+                    </a>
+                </div>
+                <button class="back-btn" onclick="gotoMainMenu()"><i class="fa-solid fa-arrow-left"></i> ${t('back')}</button>
+            `;
+        }
+        function renderMedAlerts(med, idx) {
+            let alerts = '';
+            if (med.tablets <= 3) {
+                alerts += `<div class="alert"><i class="fa-solid fa-bell"></i> ${t('alertLow')}</div>`;
+                setTimeout(playAlert, 100);
+            }
+            const exp = new Date(med.exp);
+            const now = new Date();
+            const daysLeft = (exp-now)/(1000*60*60*24);
+            if (daysLeft < 5) {
+                alerts += `<div class="alert"><i class="fa-solid fa-bell"></i> ${t('alertExpiry')}</div>`;
+                setTimeout(playAlert, 100);
+            }
+            return alerts;
+        }
+        function renderAppointments() {
+            const appts = getUserAppts();
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title"><i class="fa-solid fa-calendar-check"></i> ${t('appointments')}</div>
+                </div>
+                <form id="apptForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>${t('doctorName')}</label>
+                        <input type="text" name="doctor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('date')}</label>
+                        <input type="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('time')}</label>
+                        <input type="time" name="time" required>
+                    </div>
+                    <button class="btn" type="submit"><i class="fa-solid fa-calendar-plus icon-btn"></i> ${t('book')}</button>
+                </form>
+                <div class="appointment-list">
+                    <div style="font-weight:bold;">${t('upcoming')}</div>
+                    ${appts.map((a,i)=>`
+                        <div class="appointment-card">
+                            <b><i class="fa-solid fa-user-doctor"></i> ${a.doctor}</b><br>
+                            ${t('date')}: ${formatDate(a.date)}<br>
+                            ${t('time')}: ${formatTime(a.time)}
+                            ${renderApptAlert(a)}
+                            <div class="swipe-actions">
+                                <button class="swipe-btn dismiss" onclick="cancelAppt(${i})">${t('cancel')}</button>
+                                <button class="swipe-btn snooze" onclick="rescheduleAppt(${i})">${t('reschedule')}</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="back-btn" onclick="gotoMainMenu()"><i class="fa-solid fa-arrow-left"></i> ${t('back')}</button>
+            `;
+        }
+        function renderApptAlert(appt) {
+            const apptTime = new Date(appt.date + 'T' + appt.time);
+            const now = new Date();
+            const diff = (apptTime-now)/(1000*60);
+            if (diff > 0 && diff < 60) {
+                setTimeout(playAlert, 100);
+                return `<div class="alert"><i class="fa-solid fa-bell"></i> ${t('reminder')}</div>`;
+            }
+            return '';
+        }
+        function renderChatbot() {
+            return `
+                ${renderLangSelect()}
+                <div class="center">
+                    <div class="app-title"><i class="fa-solid fa-robot"></i> ${t('aiCaretaker')}</div>
+                </div>
+                <div class="chatbot-container" id="chatbotBox">
+                    ${state.chatbot.map(m=>`
+                        <div style="margin-bottom:0.7rem;">
+                            <b>${m.from==='user'?'You':'Caretaker'}:</b> ${m.text}
+                        </div>
+                    `).join('')}
+                </div>
+                <form id="chatForm" autocomplete="off">
+                    <div class="chat-input-row">
+                        <input type="text" name="msg" placeholder="${t('askCaretaker')}" required>
+                        <button class="btn" type="submit" style="width:auto;padding:0.5rem 1.2rem;font-size:1rem;">
+                            <i class="fa-solid fa-paper-plane"></i> ${t('send')}
+                        </button>
+                    </div>
+                </form>
+                <button class="back-btn" onclick="gotoMainMenu()"><i class="fa-solid fa-arrow-left"></i> ${t('back')}</button>
+            `;
+        }
+
+        // --- Navigation ---
+        function render() {
+            let html = '';
+            switch(state.page) {
+                case 'tnc': html = renderTnC(); break;
+                case 'register': html = renderRegister(); break;
+                case 'login': html = renderLogin(); break;
+                case 'main': html = renderMainMenu(); break;
+                case 'medicines': html = renderMedicines(); break;
+                case 'appointments': html = renderAppointments(); break;
+                case 'chatbot': html = renderChatbot(); break;
+            }
+            document.getElementById('app').innerHTML = html;
+            attachEvents();
+        }
+        function gotoRegister() { state.page = 'register'; render(); }
+        function gotoLogin() { state.page = 'login'; render(); }
+        function gotoMainMenu() { state.page = 'main'; render(); }
+        function gotoMedicines() { state.page = 'medicines'; render(); }
+        function gotoAppointments() { state.page = 'appointments'; render(); }
+        function gotoChatbot() { state.page = 'chatbot'; render(); }
+        function logout() {
+            if (confirm(t('logoutConfirm'))) {
+                state.user = null;
+                state.page = 'tnc';
+                render();
+            }
+        }
+        function shareApp() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({title: t('appName'), url});
+            } else {
+                navigator.clipboard.writeText(url);
+                showToast('Link copied!', 'success');
+            }
+        }
+
+        // --- Event Handlers ---
+        function attachEvents() {
+            // TnC
+            if (state.page === 'tnc') {
+                window.onTncAgree = (el) => {
+                    document.getElementById('registerBtn').disabled = !el.checked;
+                    document.getElementById('loginBtn').disabled = !el.checked;
+                };
+            }
+            // Register
+            if (state.page === 'register') {
+                document.getElementById('registerForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    const f = e.target;
+                    const name = f.name.value.trim();
+                    const email = f.email.value.trim().toLowerCase();
+                    const password = f.password.value;
+                    const confirm = f.confirm.value;
+                    const linkedName = f.linkedName.value.trim();
+                    const linkedContact = f.linkedContact.value.trim();
+                    const alertsTo = f.alertsTo.value;
+                    if (password.length < 6) return showToast(t('passwordShort'), 'error');
+                    if (password !== confirm) return showToast('Passwords do not match', 'error');
+                    if (state.users.some(u=>u.email===email)) return showToast(t('emailExists'), 'error');
+                    const user = {name, email, password, linkedUser: linkedName?{name:linkedName,contact:linkedContact}:null, alertsTo};
+                    state.users.push(user);
+                    saveUsers();
+                    state.user = user;
+                    state.alertsTo = alertsTo;
+                    state.linkedUser = user.linkedUser;
+                    state.page = 'main';
+                    render();
+                };
+            }
+            // Login
+            if (state.page === 'login') {
+                document.getElementById('loginForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    const f = e.target;
+                    const email = f.email.value.trim().toLowerCase();
+                    const password = f.password.value;
+                    const user = state.users.find(u=>u.email===email && u.password===password);
+                    if (!user) return showToast(t('invalidLogin'), 'error');
+                    state.user = user;
+                    state.alertsTo = user.alertsTo;
+                    state.linkedUser = user.linkedUser;
+                    state.page = 'main';
+                    render();
+                };
+            }
+            // Medicines
+            if (state.page === 'medicines') {
+                document.getElementById('medForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    const f = e.target;
+                    const name = f.name.value.trim();
+                    const tablets = parseInt(f.tablets.value);
+                    const mfg = f.mfg.value;
+                    const exp = f.exp.value;
+                    const schedule = f.schedule.value;
+                    if (!name || !tablets || !mfg || !exp || !schedule) return showToast(t('required'), 'error');
+                    const meds = getUserMeds();
+                    meds.push({name, tablets, mfg, exp, schedule});
+                    setUserMeds(meds);
+                    showToast('Medicine uploaded');
+                    render();
+                };
+                window.dismissAlert = function(idx) {
+                    showToast(t('dismissed'));
+                };
+                window.snoozeAlert = function(idx) {
+                    const mins = prompt(t('snoozeFor'), 10);
+                    if (mins) showToast(t('snoozed'));
+                };
+                window.nextDayAlert = function(idx) {
+                    showToast(t('nextDaySet'));
+                };
+            }
+            // Appointments
+            if (state.page === 'appointments') {
+                document.getElementById('apptForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    const f = e.target;
+                    const doctor = f.doctor.value.trim();
+                    const date = f.date.value;
+                    const time = f.time.value;
+                    if (!doctor || !date || !time) return showToast(t('required'), 'error');
+                    const appts = getUserAppts();
+                    appts.push({doctor, date, time});
+                    setUserAppts(appts);
+                    showToast(t('appointmentBooked'));
+                    render();
+                };
+                window.cancelAppt = function(idx) {
+                    const appts = getUserAppts();
+                    appts.splice(idx,1);
+                    setUserAppts(appts);
+                    showToast(t('appointmentCancelled'));
+                    render();
+                };
+                window.rescheduleAppt = function(idx) {
+                    const appts = getUserAppts();
+                    const newDate = prompt(t('date'), appts[idx].date);
+                    const newTime = prompt(t('time'), appts[idx].time);
+                    if (newDate && newTime) {
+                        appts[idx].date = newDate;
+                        appts[idx].time = newTime;
+                        setUserAppts(appts);
+                        showToast(t('appointmentRescheduled'));
+                        render();
+                    }
+                };
+            }
+            // Chatbot
+            if (state.page === 'chatbot') {
+                document.getElementById('chatForm').onsubmit = function(e) {
+                    e.preventDefault();
+                    const f = e.target;
+                    const msg = f.msg.value.trim();
+                    if (!msg) return;
+                    state.chatbot.push({from:'user', text:msg});
+                    setTimeout(()=> {
+                        const reply = getCaretakerReply(msg);
+                        state.chatbot.push({from:'bot', text:reply});
+                        render();
+                        setTimeout(()=> {
+                            const box = document.getElementById('chatbotBox');
+                            box.scrollTop = box.scrollHeight;
+                        }, 50);
+                    }, 600);
+                    render();
+                };
+            }
+            // Language
+            window.switchLang = switchLang;
+        }
+
+        // --- AI Caretaker (Mock) ---
+        function getCaretakerReply(msg) {
+            msg = msg.toLowerCase();
+            if (msg.includes('diabetes')) return "For diabetes, eat more fiber, avoid sugar, and try yoga like Surya Namaskar. Consult your doctor for ayurvedic options like fenugreek.";
+            if (msg.includes('bp') || msg.includes('blood pressure')) return "For BP, reduce salt, walk daily, and try breathing exercises. Ashwagandha may help (consult doctor).";
+            if (msg.includes('cold') || msg.includes('cough')) return "For cold/cough, drink warm fluids, try steam inhalation, and consider tulsi or ginger. Homeopathy: Arsenicum Album.";
+            if (msg.includes('pain')) return "For pain, gentle stretching and yoga may help. Turmeric milk is good for joint pain. Consult your doctor for medicines.";
+            if (msg.includes('exercise')) return "Yoga, walking, and light stretching are good for most. For back pain, try Bhujangasana. For diabetes, Surya Namaskar.";
+            if (msg.includes('ayurvedic')) return "Ayurvedic suggestions depend on your condition. For immunity: Giloy, Ashwagandha. For digestion: Triphala.";
+            if (msg.includes('homeopathy')) return "Homeopathy: For cold - Arsenicum Album. For pain - Rhus Tox. For allergies - Allium Cepa. Consult a homeopath.";
+            if (msg.includes('hello') || msg.includes('hi')) return "Hello! How can I help you with your health today?";
+            return "I'm your caretaker. Ask me about diet, exercises, ayurvedic or homeopathy suggestions!";
+        }
+
+        // --- Init ---
+        render();
+    </script>
+</body>
+</html>
