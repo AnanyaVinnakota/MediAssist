@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Medi Assist</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1976d2;
+            --accent: #43a047;
+            --danger: #e53935;
+            --bg: #f5f5f5;
+            --text: #222;
+            --font-lg: 1.25rem;
+            --font-xl: 1.5rem;
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 420px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+        }
+        h1, h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-top: 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0 0.5rem 0;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: var(--font-lg);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:active { background: #125ea2; }
+        .btn-accent { background: var(--accent); }
+        .btn-danger { background: var(--danger); }
+        .btn-small { font-size: 1rem; padding: 0.5rem; }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.5rem;
+        }
+        .link {
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .swipe-actions {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+        .swipe-btn {
+            flex: 1;
+            margin: 0 0.2rem;
+            padding: 0.7rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+        }
+        .swipe-dismiss { background: var(--accent); }
+        .swipe-snooze { background: var(--primary); }
+        .swipe-nextday { background: var(--danger); }
+        .alert {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .lang-select {
+            float: right;
+            margin-top: -1.5rem;
+            margin-bottom: 1rem;
+        }
+        .large-text {
+            font-size: var(--font-xl);
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1rem 0.5rem; }
+            .large-text { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app"></div>
+
+    <script>
+        // --- Language Support ---
+        const translations = {
+            en: {
+                projectName: "Medi Assist",
+                uploadMedicine: "Uploading medicine details",
+                swipeOptions: "Swiping options (dismiss/snooze/next-day reminder)",
+                bookingAppointments: "Booking appointments",
+                alertsReminders: "Alerts and reminders",
+                terms: "Terms & Conditions",
+                agree: "I agree to Terms & Conditions",
+                continue: "Continue",
+                register: "Register",
+                login: "Login",
+                name: "Name",
+                email: "Email",
+                password: "Password",
+                addUser: "Add Linked User",
+                userInfo: "Additional User Info",
+                mainMenu: "Main Menu",
+                medicines: "Medicines",
+                appointments: "Appointments",
+                healthbot: "Healthbot",
+                back: "Back to Main Menu",
+                medName: "Medicine Name",
+                tablets: "Number of Tablets in Strip",
+                mfgDate: "Manufactured Date",
+                expDate: "Expiry Date",
+                schedule: "Schedule (timing of intake)",
+                upload: "Upload",
+                reorder: "Reorder Medicines",
+                alertLow: "Alert: Tablet strip is about to finish!",
+                alertExpiry: "Alert: Medicine is about to expire!",
+                snooze: "Snooze",
+                dismiss: "Dismiss",
+                nextDay: "Next-day Reminder",
+                snoozeTime: "Snooze Time (minutes)",
+                bookAppt: "Book Appointment",
+                doctorName: "Doctor Name",
+                date: "Date",
+                time: "Time",
+                upcoming: "Upcoming Appointments",
+                reschedule: "Reschedule",
+                cancel: "Cancel",
+                chatPlaceholder: "Ask me anything about your health...",
+                send: "Send",
+                alertFor: "Send alerts to:",
+                self: "Myself",
+                linked: "Linked User",
+                language: "Language",
+                english: "English",
+                telugu: "Telugu",
+                hindi: "Hindi",
+                largeText: "Larger Text",
+                logout: "Logout"
+            },
+            te: {
+                projectName: "మెడి అసిస్ట్",
+                uploadMedicine: "ఔషధ వివరాలను అప్‌లోడ్ చేయడం",
+                swipeOptions: "స్వైప్ ఎంపికలు (డిస్మిస్/స్నూజ్/తరువాతి రోజు రిమైండర్)",
+                bookingAppointments: "డాక్టర్ అపాయింట్‌మెంట్ బుకింగ్",
+                alertsReminders: "అలర్ట్స్ మరియు రిమైండర్లు",
+                terms: "నిబంధనలు & షరతులు",
+                agree: "నేను నిబంధనలు & షరతులను అంగీకరిస్తున్నాను",
+                continue: "కొనసాగించు",
+                register: "నమోదు",
+                login: "లాగిన్",
+                name: "పేరు",
+                email: "ఇమెయిల్",
+                password: "పాస్‌వర్డ్",
+                addUser: "లింక్ చేసిన వినియోగదారుని జోడించండి",
+                userInfo: "అదనపు వినియోగదారు సమాచారం",
+                mainMenu: "ప్రధాన మెనూ",
+                medicines: "ఔషధాలు",
+                appointments: "అపాయింట్‌మెంట్లు",
+                healthbot: "హెల్త్‌బాట్",
+                back: "ప్రధాన మెనూకు వెనక్కి",
+                medName: "ఔషధం పేరు",
+                tablets: "స్ట్రిప్‌లో టాబ్లెట్లు సంఖ్య",
+                mfgDate: "తయారీ తేదీ",
+                expDate: "గడువు తేదీ",
+                schedule: "షెడ్యూల్ (తీసుకునే సమయం)",
+                upload: "అప్‌లోడ్ చేయండి",
+                reorder: "ఔషధాలను మళ్లీ ఆర్డర్ చేయండి",
+                alertLow: "అలర్ట్: టాబ్లెట్ స్ట్రిప్ ముగింపుకు చేరుకుంది!",
+                alertExpiry: "అలర్ట్: ఔషధం గడువు ముగియబోతోంది!",
+                snooze: "స్నూజ్",
+                dismiss: "డిస్మిస్",
+                nextDay: "తరువాతి రోజు రిమైండర్",
+                snoozeTime: "స్నూజ్ సమయం (నిమిషాలు)",
+                bookAppt: "అపాయింట్‌మెంట్ బుక్ చేయండి",
+                doctorName: "డాక్టర్ పేరు",
+                date: "తేదీ",
+                time: "సమయం",
+                upcoming: "రాబోయే అపాయింట్‌మెంట్లు",
+                reschedule: "మళ్లీ షెడ్యూల్ చేయండి",
+                cancel: "రద్దు చేయండి",
+                chatPlaceholder: "మీ ఆరోగ్యంపై ఏదైనా అడగండి...",
+                send: "పంపండి",
+                alertFor: "అలర్ట్స్ పంపించు:",
+                self: "నేను",
+                linked: "లింక్ చేసిన వినియోగదారు",
+                language: "భాష",
+                english: "ఇంగ్లీష్",
+                telugu: "తెలుగు",
+                hindi: "హిందీ",
+                largeText: "పెద్ద అక్షరాలు",
+                logout: "లాగ్ అవుట్"
+            },
+            hi: {
+                projectName: "मेडी असिस्ट",
+                uploadMedicine: "दवा विवरण अपलोड करें",
+                swipeOptions: "स्वाइप विकल्प (डिसमिस/स्नूज़/अगले दिन रिमाइंडर)",
+                bookingAppointments: "डॉक्टर अपॉइंटमेंट बुकिंग",
+                alertsReminders: "अलर्ट्स और रिमाइंडर",
+                terms: "नियम और शर्तें",
+                agree: "मैं नियम और शर्तों से सहमत हूँ",
+                continue: "जारी रखें",
+                register: "रजिस्टर",
+                login: "लॉगिन",
+                name: "नाम",
+                email: "ईमेल",
+                password: "पासवर्ड",
+                addUser: "लिंक्ड यूज़र जोड़ें",
+                userInfo: "अतिरिक्त यूज़र जानकारी",
+                mainMenu: "मुख्य मेनू",
+                medicines: "दवाइयाँ",
+                appointments: "अपॉइंटमेंट्स",
+                healthbot: "हेल्थबॉट",
+                back: "मुख्य मेनू पर वापस जाएँ",
+                medName: "दवा का नाम",
+                tablets: "स्ट्रिप में टैबलेट्स की संख्या",
+                mfgDate: "निर्माण तिथि",
+                expDate: "समाप्ति तिथि",
+                schedule: "शेड्यूल (सेवन का समय)",
+                upload: "अपलोड करें",
+                reorder: "दवाइयाँ फिर से ऑर्डर करें",
+                alertLow: "अलर्ट: टैबलेट स्ट्रिप खत्म होने वाली है!",
+                alertExpiry: "अलर्ट: दवा समाप्त होने वाली है!",
+                snooze: "स्नूज़",
+                dismiss: "डिसमिस",
+                nextDay: "अगले दिन रिमाइंडर",
+                snoozeTime: "स्नूज़ समय (मिनट)",
+                bookAppt: "अपॉइंटमेंट बुक करें",
+                doctorName: "डॉक्टर का नाम",
+                date: "तारीख",
+                time: "समय",
+                upcoming: "आगामी अपॉइंटमेंट्स",
+                reschedule: "पुनर्निर्धारित करें",
+                cancel: "रद्द करें",
+                chatPlaceholder: "अपने स्वास्थ्य के बारे में कुछ भी पूछें...",
+                send: "भेजें",
+                alertFor: "अलर्ट भेजें:",
+                self: "स्वयं",
+                linked: "लिंक्ड यूज़र",
+                language: "भाषा",
+                english: "अंग्रेज़ी",
+                telugu: "तेलुगु",
+                hindi: "हिंदी",
+                largeText: "बड़ा टेक्स्ट",
+                logout: "लॉगआउट"
+            }
+        };
+        let lang = localStorage.getItem('medassist_lang') || 'en';
+        function t(key) { return translations[lang][key] || key; }
+
+        // --- State ---
+        let state = {
+            page: 'landing',
+            agreed: false,
+            user: null,
+            users: JSON.parse(localStorage.getItem('medassist_users') || '[]'),
+            medicines: JSON.parse(localStorage.getItem('medassist_medicines') || '[]'),
+            appointments: JSON.parse(localStorage.getItem('medassist_appointments') || '[]'),
+            alerts: [],
+            linkedUsers: [],
+            largeText: false
+        };
+
+        // --- Utility ---
+        function saveUsers() {
+            localStorage.setItem('medassist_users', JSON.stringify(state.users));
+        }
+        function saveMedicines() {
+            localStorage.setItem('medassist_medicines', JSON.stringify(state.medicines));
+        }
+        function saveAppointments() {
+            localStorage.setItem('medassist_appointments', JSON.stringify(state.appointments));
+        }
+        function setLang(l) {
+            lang = l;
+            localStorage.setItem('medassist_lang', lang);
+            render();
+        }
+        function setLargeText(val) {
+            state.largeText = val;
+            render();
+        }
+
+        // --- Pages ---
+        function renderLanding() {
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <div class="lang-select">
+                        <select onchange="setLang(this.value)">
+                            <option value="en"${lang==='en'?' selected':''}>${t('english')}</option>
+                            <option value="te"${lang==='te'?' selected':''}>${t('telugu')}</option>
+                            <option value="hi"${lang==='hi'?' selected':''}>${t('hindi')}</option>
+                        </select>
+                    </div>
+                    <h1>${t('projectName')}</h1>
+                    <ul>
+                        <li>${t('uploadMedicine')}</li>
+                        <li>${t('swipeOptions')}</li>
+                        <li>${t('bookingAppointments')}</li>
+                        <li>${t('alertsReminders')}</li>
+                        <li>${t('terms')}</li>
+                    </ul>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agree" ${state.agreed ? 'checked' : ''} onchange="onAgree(this.checked)">
+                        <label for="agree">${t('agree')}</label>
+                    </div>
+                    <button class="btn" ${!state.agreed ? 'disabled' : ''} onclick="gotoPage('auth')">${t('continue')}</button>
+                    <div style="margin-top:1rem;">
+                        <label>
+                            <input type="checkbox" ${state.largeText ? 'checked' : ''} onchange="setLargeText(this.checked)">
+                            ${t('largeText')}
+                        </label>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAuth() {
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <div class="lang-select">
+                        <select onchange="setLang(this.value)">
+                            <option value="en"${lang==='en'?' selected':''}>${t('english')}</option>
+                            <option value="te"${lang==='te'?' selected':''}>${t('telugu')}</option>
+                            <option value="hi"${lang==='hi'?' selected':''}>${t('hindi')}</option>
+                        </select>
+                    </div>
+                    <h2>${t('register')}</h2>
+                    <form onsubmit="onRegister(event)">
+                        <div class="input-group">
+                            <label>${t('name')}</label>
+                            <input required name="name">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('email')}</label>
+                            <input required type="email" name="email">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('password')}</label>
+                            <input required type="password" name="password">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('userInfo')}</label>
+                            <input name="info">
+                        </div>
+                        <div id="linked-users"></div>
+                        <button type="button" class="btn btn-accent" onclick="addLinkedUser()">${t('addUser')}</button>
+                        <button type="submit" class="btn">${t('register')}</button>
+                    </form>
+                    <hr>
+                    <h2>${t('login')}</h2>
+                    <form onsubmit="onLogin(event)">
+                        <div class="input-group">
+                            <label>${t('email')}</label>
+                            <input required type="email" name="email">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('password')}</label>
+                            <input required type="password" name="password">
+                        </div>
+                        <button type="submit" class="btn">${t('login')}</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderMainMenu() {
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <div class="lang-select">
+                        <select onchange="setLang(this.value)">
+                            <option value="en"${lang==='en'?' selected':''}>${t('english')}</option>
+                            <option value="te"${lang==='te'?' selected':''}>${t('telugu')}</option>
+                            <option value="hi"${lang==='hi'?' selected':''}>${t('hindi')}</option>
+                        </select>
+                    </div>
+                    <h2>${t('mainMenu')}</h2>
+                    <div class="menu">
+                        <button class="btn" onclick="gotoPage('medicines')">${t('medicines')}</button>
+                        <button class="btn" onclick="gotoPage('appointments')">${t('appointments')}</button>
+                        <button class="btn" onclick="gotoPage('healthbot')">${t('healthbot')}</button>
+                    </div>
+                    <button class="btn btn-small" onclick="logout()">${t('logout')}</button>
+                </div>
+            `;
+        }
+
+        function renderMedicines() {
+            let medList = state.medicines.filter(m => m.user === state.user.email);
+            let alerts = '';
+            medList.forEach((med, idx) => {
+                let low = med.tablets <= 2;
+                let exp = daysBetween(new Date(), new Date(med.expiry)) <= 3;
+                if (low) alerts += `<div class="alert">${t('alertLow')} (${med.name})</div>`;
+                if (exp) alerts += `<div class="alert">${t('alertExpiry')} (${med.name})</div>`;
+            });
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <h2>${t('medicines')}</h2>
+                    ${alerts}
+                    <form onsubmit="onAddMedicine(event)">
+                        <div class="input-group">
+                            <label>${t('medName')}</label>
+                            <input required name="name">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('tablets')}</label>
+                            <input required type="number" min="1" name="tablets">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('mfgDate')}</label>
+                            <input required type="date" name="mfg">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('expDate')}</label>
+                            <input required type="date" name="expiry">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('schedule')}</label>
+                            <input required name="schedule">
+                        </div>
+                        <button type="submit" class="btn">${t('upload')}</button>
+                    </form>
+                    <h3>${t('medicines')}</h3>
+                    <ul>
+                        ${medList.map((med, idx) => `
+                            <li>
+                                <b>${med.name}</b> (${med.tablets} tablets)<br>
+                                ${t('expDate')}: ${med.expiry}<br>
+                                ${t('schedule')}: ${med.schedule}
+                                <div class="swipe-actions">
+                                    <button class="swipe-btn swipe-dismiss" onclick="onSwipeMedicine(${idx},'dismiss')">${t('dismiss')}</button>
+                                    <button class="swipe-btn swipe-snooze" onclick="onSwipeMedicine(${idx},'snooze')">${t('snooze')}</button>
+                                    <button class="swipe-btn swipe-nextday" onclick="onSwipeMedicine(${idx},'nextday')">${t('nextDay')}</button>
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <div style="margin:1rem 0;">
+                        <button class="btn btn-accent" onclick="onReorder()">${t('reorder')}</button>
+                    </div>
+                    <button class="btn btn-small" onclick="gotoPage('main')">${t('back')}</button>
+                </div>
+            `;
+        }
+
+        function renderAppointments() {
+            let appts = state.appointments.filter(a => a.user === state.user.email);
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <h2>${t('appointments')}</h2>
+                    <form onsubmit="onBookAppt(event)">
+                        <div class="input-group">
+                            <label>${t('doctorName')}</label>
+                            <input required name="doctor">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('date')}</label>
+                            <input required type="date" name="date">
+                        </div>
+                        <div class="input-group">
+                            <label>${t('time')}</label>
+                            <input required type="time" name="time">
+                        </div>
+                        <button type="submit" class="btn">${t('bookAppt')}</button>
+                    </form>
+                    <h3>${t('upcoming')}</h3>
+                    <ul>
+                        ${appts.map((a, idx) => `
+                            <li>
+                                <b>${a.doctor}</b> - ${a.date} ${a.time}
+                                <div>
+                                    <button class="btn btn-small btn-accent" onclick="onRescheduleAppt(${idx})">${t('reschedule')}</button>
+                                    <button class="btn btn-small btn-danger" onclick="onCancelAppt(${idx})">${t('cancel')}</button>
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button class="btn btn-small" onclick="gotoPage('main')">${t('back')}</button>
+                </div>
+            `;
+        }
+
+        function renderHealthbot() {
+            return `
+                <div class="${state.largeText ? 'large-text' : ''}">
+                    <h2>${t('healthbot')}</h2>
+                    <div id="chatbox" style="height:200px;overflow-y:auto;background:#f0f0f0;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+                        <!-- Chat messages will appear here -->
+                    </div>
+                    <form onsubmit="onSendChat(event)">
+                        <input name="msg" placeholder="${t('chatPlaceholder')}" style="width:75%;padding:0.5rem;">
+                        <button type="submit" class="btn btn-small" style="width:22%;">${t('send')}</button>
+                    </form>
+                    <button class="btn btn-small" onclick="gotoPage('main')">${t('back')}</button>
+                </div>
+            `;
+        }
+
+        // --- Navigation ---
+        function gotoPage(page) {
+            state.page = page;
+            render();
+        }
+        function onAgree(val) {
+            state.agreed = val;
+            render();
+        }
+        function logout() {
+            state.user = null;
+            render();
+        }
+
+        // --- Register/Login Logic ---
+        function addLinkedUser() {
+            if (!state.linkedUsers) state.linkedUsers = [];
+            state.linkedUsers.push({name:'',contact:''});
+            render();
+            setTimeout(() => {
+                document.querySelectorAll('.linked-user-name').forEach((el, i) => {
+                    el.oninput = e => { state.linkedUsers[i].name = e.target.value; };
+                });
+                document.querySelectorAll('.linked-user-contact').forEach((el, i) => {
+                    el.oninput = e => { state.linkedUsers[i].contact = e.target.value; };
+                });
+            }, 10);
+        }
+        function onRegister(e) {
+            e.preventDefault();
+            const f = e.target;
+            const user = {
+                name: f.name.value,
+                email: f.email.value,
+                password: f.password.value,
+                info: f.info.value,
+                linked: state.linkedUsers || []
+            };
+            if (state.users.find(u => u.email === user.email)) {
+                alert('User already exists');
+                return;
+            }
+            state.users.push(user);
+            saveUsers();
+            state.user = user;
+            state.linkedUsers = [];
+            gotoPage('main');
+        }
+        function onLogin(e) {
+            e.preventDefault();
+            const f = e.target;
+            const user = state.users.find(u => u.email === f.email.value && u.password === f.password.value);
+            if (!user) {
+                alert('Invalid credentials');
+                return;
+            }
+            state.user = user;
+            gotoPage('main');
+        }
+
+        // --- Medicines Logic ---
+        function onAddMedicine(e) {
+            e.preventDefault();
+            const f = e.target;
+            const med = {
+                user: state.user.email,
+                name: f.name.value,
+                tablets: parseInt(f.tablets.value),
+                mfg: f.mfg.value,
+                expiry: f.expiry.value,
+                schedule: f.schedule.value
+            };
+            state.medicines.push(med);
+            saveMedicines();
+            render();
+        }
+        function onSwipeMedicine(idx, action) {
+            // For demo, just alert and remove/snooze/nextday
+            let medList = state.medicines.filter(m => m.user === state.user.email);
+            let med = medList[idx];
+            if (action === 'dismiss') {
+                alert(t('dismiss') + ': ' + med.name);
+                state.medicines = state.medicines.filter((m, i) => !(m.user === state.user.email && i === idx));
+            } else if (action === 'snooze') {
+                let mins = prompt(t('snoozeTime'), 10);
+                if (mins) alert(t('snooze') + ' ' + mins + ' min: ' + med.name);
+            } else if (action === 'nextday') {
+                alert(t('nextDay') + ': ' + med.name);
+            }
+            saveMedicines();
+            render();
+        }
+        function onReorder() {
+            window.open('https://www.netmeds.com/', '_blank');
+            setTimeout(() => window.open('https://www.1mg.com/', '_blank'), 500);
+            setTimeout(() => window.open('https://www.apollo247.com/', '_blank'), 1000);
+        }
+
+        // --- Appointments Logic ---
+        function onBookAppt(e) {
+            e.preventDefault();
+            const f = e.target;
+            const appt = {
+                user: state.user.email,
+                doctor: f.doctor.value,
+                date: f.date.value,
+                time: f.time.value
+            };
+            state.appointments.push(appt);
+            saveAppointments();
+            render();
+        }
+        function onRescheduleAppt(idx) {
+            let appts = state.appointments.filter(a => a.user === state.user.email);
+            let appt = appts[idx];
+            let date = prompt(t('date'), appt.date);
+            let time = prompt(t('time'), appt.time);
+            if (date && time) {
+                appt.date = date;
+                appt.time = time;
+                saveAppointments();
+                render();
+            }
+        }
+        function onCancelAppt(idx) {
+            let appts = state.appointments.filter(a => a.user === state.user.email);
+            let appt = appts[idx];
+            state.appointments = state.appointments.filter((a, i) => !(a.user === state.user.email && i === idx));
+            saveAppointments();
+            render();
+        }
+
+        // --- Healthbot Logic (Simple AI) ---
+        let chatHistory = [];
+        function onSendChat(e) {
+            e.preventDefault();
+            const f = e.target;
+            const msg = f.msg.value.trim();
+            if (!msg) return;
+            chatHistory.push({from:'user',text:msg});
+            let reply = getHealthbotReply(msg);
+            chatHistory.push({from:'bot',text:reply});
+            render();
+            setTimeout(() => {
+                let chatbox = document.getElementById('chatbox');
+                if (chatbox) chatbox.scrollTop = chatbox.scrollHeight;
+            }, 10);
+            f.msg.value = '';
+        }
+        function getHealthbotReply(msg) {
+            msg = msg.toLowerCase();
+            if (msg.includes('diabetes')) return "Eat high-fiber foods, avoid sugar. Try yoga and brisk walking.";
+            if (msg.includes('cold') || msg.includes('cough')) return "Drink warm fluids, try ginger tea. For ayurveda: tulsi, honey, and turmeric.";
+            if (msg.includes('bp') || msg.includes('blood pressure')) return "Reduce salt, eat fruits, try meditation and light exercise.";
+            if (msg.includes('yoga')) return "Try pranayama, surya namaskar, or gentle stretching.";
+            if (msg.includes('homeopathy')) return "Consult a certified homeopath for personalized remedies.";
+            if (msg.includes('ayurveda')) return "Use turmeric, ashwagandha, and neem for general wellness.";
+            if (msg.includes('exercise')) return "Walking, yoga, and light aerobics are good for most people.";
+            if (msg.includes('hello') || msg.includes('hi')) return "Hello! How can I help you today?";
+            return "Sorry, I can suggest food, exercises, and remedies for common health issues. Please ask!";
+        }
+
+        // --- Helper ---
+        function daysBetween(d1, d2) {
+            return Math.ceil((d2 - d1) / (1000*60*60*24));
+        }
+
+        // --- Render ---
+        function render() {
+            let html = '';
+            if (state.page === 'landing') html = renderLanding();
+            else if (state.page === 'auth') html = renderAuth();
+            else if (!state.user) html = renderAuth();
+            else if (state.page === 'main') html = renderMainMenu();
+            else if (state.page === 'medicines') html = renderMedicines();
+            else if (state.page === 'appointments') html = renderAppointments();
+            else if (state.page === 'healthbot') html = renderHealthbot();
+
+            document.getElementById('app').innerHTML = html;
+
+            // Linked users UI
+            if (state.page === 'auth') {
+                let linkedHtml = '';
+                (state.linkedUsers||[]).forEach((u, i) => {
+                    linkedHtml += `
+                        <div class="input-group">
+                            <input class="linked-user-name" placeholder="${t('name')}" value="${u.name||''}">
+                            <input class="linked-user-contact" placeholder="Contact" value="${u.contact||''}">
+                        </div>
+                    `;
+                });
+                document.getElementById('linked-users').innerHTML = linkedHtml;
+            }
+            // Healthbot chat UI
+            if (state.page === 'healthbot') {
+                let chatbox = document.getElementById('chatbox');
+                if (chatbox) {
+                    chatbox.innerHTML = chatHistory.map(m =>
+                        `<div style="text-align:${m.from==='user'?'right':'left'};margin:0.3rem 0;">
+                            <span style="background:${m.from==='user'?'#1976d2':'#e0e0e0'};color:${m.from==='user'?'#fff':'#222'};padding:0.5rem 1rem;border-radius:12px;display:inline-block;">
+                                ${m.text}
+                            </span>
+                        </div>`
+                    ).join('');
+                }
+            }
+        }
+
+        // --- Expose for inline handlers ---
+        window.gotoPage = gotoPage;
+        window.onAgree = onAgree;
+        window.setLang = setLang;
+        window.setLargeText = setLargeText;
+        window.addLinkedUser = addLinkedUser;
+        window.onRegister = onRegister;
+        window.onLogin = onLogin;
+        window.onAddMedicine = onAddMedicine;
+        window.onSwipeMedicine = onSwipeMedicine;
+        window.onReorder = onReorder;
+        window.onBookAppt = onBookAppt;
+        window.onRescheduleAppt = onRescheduleAppt;
+        window.onCancelAppt = onCancelAppt;
+        window.onSendChat = onSendChat;
+        window.logout = logout;
+
+        // --- Initial Render ---
+        render();
+    </script>
+</body>
+</html>
